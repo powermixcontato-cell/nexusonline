@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Online - Loja de Vendas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6D28D9;
+            --primary-dark: #5B21B6;
+            --primary-light: #7C3AED;
+            --bg-dark: #0f0f0f;
+            --bg-light: #1a1a1a;
+            --text-light: #e5e5e5;
+            --accent: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-light) 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--primary);
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary-light);
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 80px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+            border-radius: 10px;
+            margin-bottom: 4rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            background: var(--accent);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Products Section */
+        .products {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--primary-light);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: var(--bg-light);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-light);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.2);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .product-name {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-description {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .product-discount {
+            font-size: 0.9rem;
+            color: var(--accent);
+            text-decoration: line-through;
+            margin-right: 1rem;
+            opacity: 0.7;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .add-to-cart:hover {
+            background: var(--primary-light);
+        }
+
+        /* Cart Modal */
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-modal.active {
+            display: flex;
+        }
+
+        .cart-content {
+            background: var(--bg-light);
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--primary);
+            padding-bottom: 1rem;
+        }
+
+        .cart-header h2 {
+            color: var(--primary-light);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-price {
+            color: var(--primary-light);
+        }
+
+        .remove-item {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .cart-total {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 5px;
+            margin-top: 1.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .checkout-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .payment-method {
+            flex: 1;
+            min-width: 100px;
+            padding: 1rem;
+            border: 2px solid var(--primary);
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .payment-method.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Chat IA */
+        .chat-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 999;
+        }
+
+        .chat-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(124, 58, 237, 0.4);
+            transition: all 0.3s;
+        }
+
+        .chat-btn:hover {
+            transform: scale(1.1);
+            background: var(--primary-light);
+        }
+
+        .chat-window {
+            display: none;
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 300px;
+            height: 400px;
+            background: var(--bg-light);
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            flex-direction: column;
+        }
+
+        .chat-window.active {
+            display: flex;
+        }
+
+        .chat-header {
+            background: var(--primary);
+            padding: 1rem;
+            border-bottom: 2px solid var(--primary-light);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .chat-input-area {
+            padding: 1rem;
+            border-top: 1px solid var(--primary);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: var(--bg-dark);
+            border: 1px solid var(--primary);
+            color: var(--text-light);
+            padding: 0.5rem;
+            border-radius: 3px;
+        }
+
+        .chat-send {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        /* WhatsApp Button */
+        .whatsapp-btn {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #25D366;
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s;
+            z-index: 999;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .whatsapp-btn:hover {
+            transform: scale(1.1);
+            background: #20BA5A;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-light);
+            border-top: 1px solid var(--primary);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--primary-light);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                gap: 1rem;
+            }
+
+            .header-container {
+                padding: 0.5rem 0;
+            }
+        }
+
+        /* Notificação */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 5px;
+            display: none;
+            z-index: 2001;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+    </style>
+<script type="text/javascript" nonce="c68440397b234868a021a94b7d5" src="//local.adguard.org?ts=1764142436886&amp;type=content-script&amp;dmn=ppl-ai-code-interpreter-files.s3.amazonaws.com&amp;url=https%3A%2F%2Fppl-ai-code-interpreter-files.s3.amazonaws.com%2Fweb%2Fdirect-files%2Faa4dcf2a4fde1f265d8f154d803fea3f%2F4407bd94-022a-4e44-a48c-fd53d302936a%2F0eb54730.html%3Fresponse-content-disposition%3Dattachment%253B%2520filename%253Dindex.html%253B%2520filename%252A%253DUTF-8%2527%2527index.html%26AWSAccessKeyId%3DASIA2F3EMEYE3WV7V2LV%26Signature%3DBCGMOZ5DpKe3qk7C5MhjfPBs9sY%253D%26x-amz-security-token%3DIQoJb3JpZ2luX2VjELf%252F%252F%252F%252F%252F%252F%252F%252F%252F%252FwEaCXVzLWVhc3QtMSJHMEUCIHgG0dEY6mcD6VKbPGyrV8ASDi%252FNsEKXZxwVNXZaGvfOAiEAkD7ufz12NcQbo7hYA68zgjRjkZ22uq9uajL5qkSY5xoq%252FAQIgP%252F%252F%252F%252F%252F%252F%252F%252F%252F%252FARABGgw2OTk3NTMzMDk3MDUiDAvuBioWxhN%252FgxbQgyrQBH5cPgWzNQkWurPc99q2fhfdATBIHsg6mpEdSy0cSAAEPQTIGMtDnMmPX2qoI0dTyt2tjLTvRk6hb9AO6T%252FBb%252Bor5q6alK1LhAOdamhw4B7CxpJ4JxAv73mRS2HXJv3PsrWtdyMsSCFzxfqxOJ5f2umhbl%252FG4%252BAISSCJ3P9EloPtHwdVOjOj4Ts0C1flMxZxyuexTN6t4pI4sqj%252Bm5NI3WMVkEes%252BJ8NRX%252B8VGKVMyJYP%252F2V3uiWY9%252FtHg5pcoEwHk4ZCyNGbTssbtwGWGkt%252F18SVTIjyXrl9jWGMASYSoZHo29q6UzbBsZI7Nn%252BMtCvQLPfG14sPqVULbTzWy5DbAcyY0mELWeESSB5CFTkunMhvuhPJOzDJDaj%252BqwE8I6C8nk6zxcEINLzodsAaxFfhpD00RQz5fh9%252FJC6V6gwigHzp31Ek3reOk3eTJeXNK%252FzKJlPbOIOtSoh7RniDyteT6kd8fz0SxTzJQsxXPvGmm%252FEhCWXcB4WMrdJaEXnLSeNKL5nonhS3jrBzeM%252BqR%252BrcOKwcwFuPrE48fJSTPGAm1ecLAAvebjSjPKlrcPVpRUP08i39AxNviKBqhurwHVKKAY8syG919nWeAWIrZyPZj%252FjTZ9qgxGJqVQpuTFWrJzTcBUtfG1sGkkUJrzMMo87C445qe1Ah6QBQpmr%252BqdpPoB8P53KAio8F1XQOP8r6pgcZLWriFkyCgxVTw2SxNeAPKQKKN1E2lS2cgIa%252FGfo9IA7WHqRcNs7uNwLKEfKUi4YQ%252Fco81bMsIi3CrzgDOxtAVcwtseayQY6mAGkRa13OPcnuyeNb8coO9maqhIzmR4hH%252FHsG3aovxQCS2RfU%252FTNIsFNFlOzZA845pPMqWA4708bdjlI153Pi0CAyAw57mbxABXz33L5gf%252BaBzb29WVmoq%252BEWt7OR0IR02v14oIKKb8mNOQHSHk%252BCYoSp2XCmCdKpb1d0HXttwdu6gOiGtK7mapQBU2uWl2hgqaZC%252F48ZEXYSw%253D%253D%26Expires%3D1764143059&amp;app=firefox.exe&amp;css=3&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=1"></script><script type="text/javascript" nonce="c68440397b234868a021a94b7d5" src="//local.adguard.org?ts=1764142436886&amp;name=AdGuard%20Assistant&amp;name=AdGuard%20Extra&amp;name=AdGuard%20Popup%20Blocker&amp;type=user-script"></script></head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo">🚀 NEXUS ONLINE</a>
+            <nav>
+                <a href="#produtos">Produtos</a>
+                <a href="#sobre">Sobre</a>
+                <a href="#contato">Contato</a>
+                <div class="cart-icon" onclick="toggleCart()">
+                    🛒
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Bem-vindo à Nexus Online</h1>
+            <p>Descubra os melhores produtos com as melhores ofertas</p>
+            <button class="cta-button" onclick="document.getElementById('produtos').scrollIntoView({behavior: 'smooth'})">
+                Ver Produtos
+            </button>
+        </section>
+
+        <!-- Products Section -->
+        <section id="produtos" class="products">
+            <h2 class="section-title">🔥 Produtos em Destaque</h2>
+            <div class="products-grid" id="productsGrid"></div>
+        </section>
+    </main>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h2>🛒 Seu Carrinho</h2>
+                <button class="close-btn" onclick="toggleCart()">✕</button>
+            </div>
+            <div id="cartItems"></div>
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">R$ 0.00</span>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="payment-methods" id="paymentMethods">
+                <div class="payment-method" onclick="selectPayment('pix')">💳 PIX</div>
+                <div class="payment-method" onclick="selectPayment('creditcard')">💰 Crédito</div>
+                <div class="payment-method" onclick="selectPayment('debit')">🏦 Débito</div>
+            </div>
+
+            <button class="checkout-btn" onclick="checkout()" id="checkoutBtn">
+                Finalizar Compra
+            </button>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Chat IA Button -->
+    <div class="chat-container">
+        <button class="chat-btn" onclick="toggleChat()">💬</button>
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <h3>Assistente IA</h3>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Digite sua mensagem...">
+                <button class="chat-send" onclick="sendMessage()">↑</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/5511976227759?text=Olá! Gostaria de mais informações sobre os produtos da Nexus Online." 
+       class="whatsapp-btn" title="Fale conosco no WhatsApp">
+        💬
+    </a>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#sobre">Sobre Nós</a>
+                <a href="#politica">Política de Privacidade</a>
+                <a href="#termos">Termos de Uso</a>
+                <a href="#contato">Contato</a>
+            </div>
+            <p>&copy; 2025 Nexus Online. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Dados dos produtos
+        const products = [
+            {
+                id: 1,
+                name: "Produto Premium 1",
+                description: "Descrição do produto 1",
+                price: 299.90,
+                originalPrice: 399.90,
+                emoji: "📱",
+                discount: "25%"
+            },
+            {
+                id: 2,
+                name: "Produto Premium 2",
+                description: "Descrição do produto 2",
+                price: 199.90,
+                originalPrice: 299.90,
+                emoji: "💻",
+                discount: "33%"
+            },
+            {
+                id: 3,
+                name: "Produto Premium 3",
+                description: "Descrição do produto 3",
+                price: 149.90,
+                originalPrice: 199.90,
+                emoji: "⌚",
+                discount: "25%"
+            },
+            {
+                id: 4,
+                name: "Produto Premium 4",
+                description: "Descrição do produto 4",
+                price: 179.90,
+                originalPrice: 249.90,
+                emoji: "🎧",
+                discount: "28%"
+            },
+            {
+                id: 5,
+                name: "Produto Premium 5",
+                description: "Descrição do produto 5",
+                price: 89.90,
+                originalPrice: 129.90,
+                emoji: "📷",
+                discount: "30%"
+            },
+            {
+                id: 6,
+                name: "Produto Premium 6",
+                description: "Descrição do produto 6",
+                price: 249.90,
+                originalPrice: 349.90,
+                emoji: "🖥️",
+                discount: "28%"
+            }
+        ];
+
+        let cart = [];
+        let selectedPayment = null;
+
+        // Renderizar produtos
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <div class="product-image">${product.emoji}</div>
+                    <h3 class="product-name">${product.name}</h3>
+                    <p class="product-description">${product.description}</p>
+                    <div>
+                        <span class="product-discount">R$ ${product.originalPrice.toFixed(2)}</span>
+                        <span class="product-price">R$ ${product.price.toFixed(2)}</span>
+                        <span style="color: var(--accent); font-size: 0.9rem;">-${product.discount}</span>
+                    </div>
+                    <button class="add-to-cart" onclick="addToCart(${product.id})">
+                        Adicionar ao Carrinho
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Adicionar ao carrinho
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({...product, quantity: 1});
+            }
+
+            updateCart();
+            showNotification(`${product.name} adicionado ao carrinho! 🎉`);
+        }
+
+        // Atualizar carrinho
+        function updateCart() {
+            document.getElementById('cartCount').textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+            const cartItemsDiv = document.getElementById('cartItems');
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = '<p style="text-align: center; padding: 2rem;">Seu carrinho está vazio</p>';
+                document.getElementById('checkoutBtn').disabled = true;
+            } else {
+                cartItemsDiv.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">R$ ${item.price.toFixed(2)} x ${item.quantity}</div>
+                        </div>
+                        <button class="remove-item" onclick="removeFromCart(${item.id})">✕</button>
+                    </div>
+                `).join('');
+                document.getElementById('checkoutBtn').disabled = false;
+            }
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('cartTotal').textContent = `R$ ${total.toFixed(2)}`;
+        }
+
+        // Remover do carrinho
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCart();
+            showNotification('Produto removido do carrinho');
+        }
+
+        // Toggle carrinho
+        function toggleCart() {
+            document.getElementById('cartModal').classList.toggle('active');
+        }
+
+        // Selecionar método de pagamento
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+
+        // Checkout
+        function checkout() {
+            if (cart.length === 0) {
+                showNotification('Adicione produtos ao carrinho!');
+                return;
+            }
+
+            if (!selectedPayment) {
+                showNotification('Selecione um método de pagamento!');
+                return;
+            }
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const cartSummary = cart.map(item => `${item.name} (x${item.quantity})`).join(', ');
+
+            showNotification(`Compra de R$ ${total.toFixed(2)} processada! 🎉`);
+
+            // Integração com Asaas (exemplo)
+            console.log('Processando pagamento:', {
+                method: selectedPayment,
+                total: total,
+                items: cartSummary
+            });
+
+            // Limpar carrinho após 2 segundos
+            setTimeout(() => {
+                cart = [];
+                selectedPayment = null;
+                updateCart();
+                toggleCart();
+            }, 2000);
+        }
+
+        // Chat IA
+        function toggleChat() {
+            document.getElementById('chatWindow').classList.toggle('active');
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            const chatMessages = document.getElementById('chatMessages');
+
+            // Mensagem do usuário
+            chatMessages.innerHTML += `
+                <div style="text-align: right; margin: 0.5rem 0;">
+                    <span style="background: var(--primary); padding: 0.5rem 1rem; border-radius: 10px; display: inline-block;">
+                        ${message}
+                    </span>
+                </div>
+            `;
+
+            input.value = '';
+
+            // Resposta da IA
+            setTimeout(() => {
+                const responses = [
+                    'Olá! Como posso ajudá-lo?',
+                    'Qual produto você está interessado?',
+                    'Temos as melhores ofertas do mercado!',
+                    'Gostaria de conhecer nossa promoção?',
+                    'Fale comigo no WhatsApp para mais informações!'
+                ];
+                const response = responses[Math.floor(Math.random() * responses.length)];
+
+                chatMessages.innerHTML += `
+                    <div style="text-align: left; margin: 0.5rem 0;">
+                        <span style="background: var(--bg-light); border: 1px solid var(--primary); padding: 0.5rem 1rem; border-radius: 10px; display: inline-block;">
+                            ${response}
+                        </span>
+                    </div>
+                `;
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 500);
+        }
+
+        // Notificações
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            updateCart();
+        });
+
+        // Tecla Enter no chat
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && document.getElementById('chatInput') === document.activeElement) {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
